@@ -36,3 +36,5 @@ def api_test(request, *args, **kwargs):
     data["params"] = dict(request.GET)
     data["headers"] = dict(request.headers)
     return JsonResponse(data)
+
+
