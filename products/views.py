@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from rest_framework import generics
-
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from .models import Product
 from .serializers import Productserializer
 
@@ -33,3 +34,51 @@ class ProductDeatilApiView(generics.RetrieveAPIView):
     serializer_class=Productserializer
 
 product_detail_view = ProductDeatilApiView.as_view()
+
+# update
+class ProductUpdatelApiView(generics.UpdateAPIView):
+    queryset = Product.objects.all()
+    serializer_class=Productserializer
+    lookup_field = "pk"
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        if not instance.content:
+            instance.content = instance.tittle
+
+product_update_view = ProductUpdatelApiView.as_view()
+
+# delete records
+class ProductDestroylApiView(generics.DestroyAPIView):
+    queryset = Product.objects.all()
+    serializer_class=Productserializer
+    lookup_field = "pk"
+    def perform_destroy(self, intance):
+        super().perform_destroy(intance)
+
+product_destroy_view = ProductDestroylApiView.as_view()
+# function based api view
+@api_view(["GET", "POST"])
+def product_alt_view(request, pk=None, *args, **kwargs):
+    method = request.method
+    # breakpoint()
+    if method == "GET" :
+        if pk is not None:
+            # return only respective records
+            obj = get_object_or_404(Product, pk = pk)
+            data = Productserializer(obj, many=False).data
+            return Response(data)
+        # return all records
+        queryset =Product.objects.all()
+        data=Productserializer(queryset, many=True).data
+        return Response(data)
+    if method == "POST":
+        serializer = Productserializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            tittle = serializer.validated_data.get('tittle')
+            content = serializer.validated_data.get('content')
+            if content is None:
+                content = tittle
+            serializer.save(content=content)
+            return Response(serializer.data)
+        return Response({"details: invalid data"}, status=400)
+
