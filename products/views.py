@@ -11,7 +11,7 @@ from .serializers import Productserializer
 class ProductCreateApiView(generics.CreateAPIView):
     queryset = Product.objects.all()
     serializer_class = Productserializer
-    authentication_classes = [authentication.SessionAuthentication]
+    authentication_classes = [authentication.TokenAuthentication, authentication.SessionAuthentication]
     permission_classes = [IsStaffEditoPermissions]
 
     # or we can send singnals instead
@@ -29,6 +29,7 @@ create_product_api = ProductCreateApiView.as_view()
 class ProductListDeatilApiView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class=Productserializer
+    authentication_classes = [authentication.TokenAuthentication, authentication.SessionAuthentication]
     # permission_classes = [permissions.IsAuthenticated]
     permission_classes = [IsStaffEditoPermissions]
 
