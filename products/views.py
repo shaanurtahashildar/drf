@@ -3,6 +3,7 @@ from rest_framework import generics,  mixins, permissions, authentication
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Product
+from .permissions import IsStaffEditoPermissions
 from .serializers import Productserializer
 
 
@@ -11,7 +12,7 @@ class ProductCreateApiView(generics.CreateAPIView):
     queryset = Product.objects.all()
     serializer_class = Productserializer
     authentication_classes = [authentication.SessionAuthentication]
-    permission_classes = [permissions.DjangoModelPermissions]
+    permission_classes = [IsStaffEditoPermissions]
 
     # or we can send singnals instead
     def perform_create(self, serializer):
@@ -28,7 +29,8 @@ create_product_api = ProductCreateApiView.as_view()
 class ProductListDeatilApiView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class=Productserializer
-    permission_classes = [permissions.IsAuthenticated]
+    # permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsStaffEditoPermissions]
 
 product_list_detail_view = ProductListDeatilApiView.as_view()
 # class based api view
