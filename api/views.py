@@ -7,16 +7,16 @@ from products.models import Product
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
-from .serializers import Productserializer
+# from .serializers import Productserializer
 
 
 @api_view(["POST"])
 def api_test_2(request, *args, **kwargs):
-    serializer = Productserializer(data=request.data)
-    if serializer.is_valid(raise_exception=True):
-        instance=serializer.save()
-        print(instance)
-        return Response(serializer.data)
+    # serializer = Productserializer(data=request.data)
+    # if serializer.is_valid(raise_exception=True):
+    #     instance=serializer.save()
+    #     print(instance)
+    #     return Response(serializer.data)
     return {"response" : "invalid data"}
 
     # if request.GET:

@@ -5,10 +5,11 @@ from rest_framework.response import Response
 from .models import Product
 # from ..api.permissions import IsStaffEditoPermissions
 from .serializers import Productserializer
-from api.mixins import StaffEditorPermissionMixin
+from api.mixins import StaffEditorPermissionMixin, UserQuerySetMixin
 
 # generic create record
 class ProductCreateApiView(
+    UserQuerySetMixin,
     StaffEditorPermissionMixin,
     generics.CreateAPIView):
     queryset = Product.objects.all()
@@ -24,16 +25,36 @@ class ProductCreateApiView(
         content = serializer.validated_data.get('content')
         if content is None:
             content=tittle
-        serializer.save(content=content)
+        serializer.save(user = self.request.user, content=content)
+
+
+    # commented since we imported UserQuerySetMixin
+
+    # def get_queryset(self, *args, **kwargs):
+    #     request = self.request
+    #     qry = super().get_queryset(*args, *kwargs)
+    #     print(request.user)
+    #     user = request.user
+    #     if not user.is_authenticated:
+    #         return Product.objects.none()
+    #     return qry.filter(user=request.user)
 create_product_api = ProductCreateApiView.as_view()
 
 # generic list vivew
-class ProductListDeatilApiView(StaffEditorPermissionMixin, generics.ListAPIView):
+class ProductListDeatilApiView(UserQuerySetMixin, StaffEditorPermissionMixin, generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class=Productserializer
     # authentication_classes = [authentication.TokenAuthentication, authentication.SessionAuthentication]
     # permission_classes = [permissions.IsAuthenticated]
     # permission_classes = [permissions.IsAdminUser, IsStaffEditoPermissions]
+    # def get_queryset(self, *args, **kwargs):
+    #     request = self.request
+    #     qry = super().get_queryset(*args, *kwargs)
+    #     print(request.user)
+    #     user = request.user
+    #     if not user.is_authenticated :
+    #         return  Product.objects.none()
+    #     return qry.filter(user = request.user)
 
 product_list_detail_view = ProductListDeatilApiView.as_view()
 # class based api view

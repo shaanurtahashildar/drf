@@ -2,9 +2,11 @@ from rest_framework import serializers
 
 from .models import Product
 from .validators import validate_tittle_hello, unique_product_tittle
+from api.serializers import UserPublicserializer
 
 
 class Productserializer(serializers.ModelSerializer):
+    user_data = UserPublicserializer(source="user", read_only=True)
     discount = serializers.SerializerMethodField(read_only=True)
 
     # email=serializers.EmailField(write_only=True)
@@ -14,6 +16,7 @@ class Productserializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = [
+            'user_data',
             'pk','tittle','name','content', 'price', 'sale_price', 'discount'
         ]
 
